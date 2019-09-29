@@ -89,7 +89,7 @@ g.L1 <- merge(data.frame(id=clustL1$filtered.ids,bin=clustL1$mclust$classificati
 m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (L1.post.bps <- tapply(m.L1.post$length,m.L1.post$bin,sum))
 (L1.post.count <- tapply(m.L1.post$length,m.L1.post$bin,length))
-(filtered <- (L1.count - L1.post.count)/(L1.count))
+(filtered <- (L1.count + 19 - L1.count)/(L1.count))
 (L1.pre <- data.frame(id=names(L1.count),count=L1.count,bps=L1.count.bps,gc=L1.mean.gc,uncertainty=uncertainty.L1))
 (L1.post <- data.frame(id=names(L1.post.bps),count=L1.post.count,bps=L1.post.bps,filtered=round(filtered*L1.count,2),filtered.perc=round(100*filtered,2)))
 (cat("plotted", fill=TRUE))
