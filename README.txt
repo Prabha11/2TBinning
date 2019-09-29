@@ -25,3 +25,32 @@ Statistics::Descriptive;
 3. Run the R script "Two-Tiered_Binning.R" (either interactively or directly from the terminal) 
 	- Note that the following R-packages are required: Matrix, mclust, covRobust
 	- Please ensure that the parameters are set accordingly
+
+sudo apt-get update
+
+
+sudo apt-get install perlbrew
+
+sudo apt-get install r-base
+
+cpan
+
+
+
+install Term::ProgressBar
+install Data::Dumper
+install Bio::SeqIO
+install Bio::Tools::SeqWords
+install Statistics::Descriptive
+
+
+bash generate_Features.sh
+
+R
+
+install.packages("mclust")
+install.packages("covRobust")
+
+q()
+
+Rscript TwoTiered-Binning.R

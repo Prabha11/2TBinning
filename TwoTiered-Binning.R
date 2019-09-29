@@ -1,3 +1,6 @@
+rm(list=ls())
+
+
 library(Matrix)
 library(mclust)
 library(covRobust)
@@ -30,22 +33,21 @@ p_T2_noise_K 	<- 20
 p_T2_epsilon_m 	<- 0.2
 p_T2_epsilon_u 	<- 0.2
 
-
 nfile1 <- paste(path,name,'/',name,'_view1.OFDEG',sep="")
 tfile <- paste(path,name,'/',name,'_view2.n4',sep="")
 output_file <- paste(path,name,'/',name,"_output",sep="")
 
-
+(cat("yes", fill=TRUE))
 # Tier 1 - CLUSTERING
 d1f <- read.table(file=nfile1, sep=",", header=T)
 # Filtering outliers (you may need to adjust these values according to your data set; outliers will cause the mclust functions to fail)
 
-plot(ofdeg~gc,d1f,xlab="GC content (%)",pch=20,col=densCols(cbind(d1f$gc,d1f$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8)
+plot(ofdeg~gc,d1f,xlab="GC content (%)",pch=20,col=densCols(cbind(d1f$gc,d1f$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8, sub="Initial datapoints")
 abline(h=-0.095)
 abline(h=-0.06)
 d1 <- subset(d1f,d1f$ofdeg > -0.095 & d1f$ofdeg < -0.06)
 
-plot(ofdeg~gc,d1,xlab="GC content (%)",pch=20,col=densCols(cbind(d1$gc,d1$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8)
+plot(ofdeg~gc,d1,xlab="GC content (%)",pch=20,col=densCols(cbind(d1$gc,d1$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8, sub="OFDEG filtered datapoints")
 
 d <- subset(d1,length >= p_min_length & length <= p_max_length)
 
@@ -69,7 +71,6 @@ gcs <- data.frame(id=d$id,gc=d$gc)
 
 # In most cases mclust will provide the correct number of clusters based on the BIC, but in some cases it is worthwhile to check that you are not overfitting
 plot(clustL1$mclust,clustL1$filtered.data,what="BIC")
-
 plot(toclust,xlab="U",pch=20,col="lightgray",ylab="V",cex.lab=0.9,cex.axis=0.8)
 points(clustL1.post$data,pch=20,col=blues9[5])
 
@@ -88,9 +89,10 @@ g.L1 <- merge(data.frame(id=clustL1$filtered.ids,bin=clustL1$mclust$classificati
 m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (L1.post.bps <- tapply(m.L1.post$length,m.L1.post$bin,sum))
 (L1.post.count <- tapply(m.L1.post$length,m.L1.post$bin,length))
-(filtered <- as.vector(as.vector(L1.count - L1.post.count)/(L1.count))
+(filtered <- (L1.count + 19 - L1.count)/(L1.count))
 (L1.pre <- data.frame(id=names(L1.count),count=L1.count,bps=L1.count.bps,gc=L1.mean.gc,uncertainty=uncertainty.L1))
 (L1.post <- data.frame(id=names(L1.post.bps),count=L1.post.count,bps=L1.post.bps,filtered=round(filtered*L1.count,2),filtered.perc=round(100*filtered,2)))
+(cat("plotted", fill=TRUE))
 	
 (nfile2 <- tfile)
 (d2 <- read.table(file=nfile2, sep=",", header=T))
@@ -104,6 +106,7 @@ m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (noise.L2 <- vector("list",length(v1.classes)))
 (noise.L2.count <- vector("list",length(v1.classes)))
 (mclust.L2 <- vector("list",length(v1.classes)))
+
 	
 (for (i in 1:length(v1.classes)) {
 	(v1.class <- v1.classes[i])
@@ -179,11 +182,13 @@ m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (noise.L2.summary <- data.frame(id=v1.classes,noise.perc=noise.L2.all,noise=noise.L2.count.all))
 (L2.bins <- data.frame(id=L.12,bps=unlist(count.bps),count=unlist(count.each),gc=round(100*unlist(mean.gc),2),filtered=filtered.L2,filtered.perc=filtered.L2.perc,uncertainty=uncertainty.L2.all))
 
+
+
 # Output - summary
 (write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.names=F,col.names=F,quote=F))
 # Output - binning results (sequnece.id, bin)
 (write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F))
-
+(cat("yes", fill=TRUE))
 
 # CHECK
 (ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F))
@@ -192,3 +197,4 @@ m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (taxon.r <- mx2$taxon[drop=TRUE])
 (ac2 <- xtabs(~taxon.r+bin,mx2))
 (ac2)
+
