@@ -49,7 +49,7 @@ sub compute {
 	my $update = 0;
 	$all_seqs = new Bio::SeqIO(-format=>'fasta',-file=>$input);
 	while(my $seqobj = $all_seqs->next_seq) {
-		if ($seqobj->length >= $length_min and $seqobj->length <= $length_max) {
+		if ($seqobj->length >= $length_min and $seqobj->length <= $length_max) { #ignore most contigs
 			my $id = $seqobj->id;
 			my $num_N = ($seqobj->seq =~ tr/Nn/Nn/);
 			my $seq = \(uc $seqobj->seq);

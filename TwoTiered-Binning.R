@@ -1,6 +1,5 @@
 rm(list=ls())
 
-
 library(Matrix)
 library(mclust)
 library(covRobust)
@@ -45,19 +44,20 @@ d1f <- read.table(file=nfile1, sep=",", header=T)
 plot(ofdeg~gc,d1f,xlab="GC content (%)",pch=20,col=densCols(cbind(d1f$gc,d1f$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8, sub="Initial datapoints")
 abline(h=-0.095)
 abline(h=-0.06)
-d1 <- subset(d1f,d1f$ofdeg > -0.095 & d1f$ofdeg < -0.06)
+d1 <- subset(d1f,d1f$ofdeg > -0.095 & d1f$ofdeg < -0.06) # filtering out some contigues as outliers.
 
 plot(ofdeg~gc,d1,xlab="GC content (%)",pch=20,col=densCols(cbind(d1$gc,d1$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8, sub="OFDEG filtered datapoints")
 
-d <- subset(d1,length >= p_min_length & length <= p_max_length)
+d <- subset(d1,length >= p_min_length & length <= p_max_length) # filtering out again
 
 nrow(d)
 d <- subset(d, d$n <= p_max_Ns)
 nrow(d)
-sum(d$length)
-d$ofdeg <- abs(d$ofdeg)
-ds <- data.frame(id=d$id,gc=scale(d$gc,center=F,scale=p_scaling_GC ),ofdeg=scale(d$ofdeg,center=F,scale=p_scaling_OFDEG))
-mt <- remap(ds,p_OFDEG_basis)
+sum(d$length) # get the total length of all the sequnce
+d$ofdeg <- abs(d$ofdeg) # getting absolute value of OFDEG
+ds <- data.frame(id=d$id,gc=scale(d$gc,center=F,scale=p_scaling_GC ),ofdeg=scale(d$ofdeg,center=F,scale=p_scaling_OFDEG)) # scaled data
+mt <- remap(ds,p_OFDEG_basis) # function is defined in R_func folder
+#print (mt)
 toclust <- cbind(mt$man,mt$dist)
 ids <- mt$id
 
@@ -66,8 +66,8 @@ plot(toclust,xlab="U",pch=20,col=densCols(toclust),ylab="V",cex.lab=0.9,cex.axis
 clustL1 <- clusterCleanEM_L1(toclust,ids,pnoise=p_T1_noise_est,k=p_T1_noise_K)
 clustL1.post <- clusterEM_PostProc(clustL1$mclust,gaussianCutoff=p_T1_epsilon_m,uncertaintyMax=p_T1_epsilon_u,clustL1$filtered.data,clustL1$filtered.ids)
 vz <- clustL1.post$classification
-lengths <- data.frame(id=d$id,length=d$length)
-gcs <- data.frame(id=d$id,gc=d$gc)
+lengths <- data.frame(id=d$id,length=d$length) # create two dem array  of id, length
+gcs <- data.frame(id=d$id,gc=d$gc) # create to dem array of id, gc
 
 # In most cases mclust will provide the correct number of clusters based on the BIC, but in some cases it is worthwhile to check that you are not overfitting
 plot(clustL1$mclust,clustL1$filtered.data,what="BIC")
