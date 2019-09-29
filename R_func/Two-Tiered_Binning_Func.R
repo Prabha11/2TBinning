@@ -22,29 +22,25 @@ remap <- function(ds,k) {
 	yy <- c(c,a,b)%*% rbind(1,xx^2,xx)
 
 	mapped <- data.frame(id=ds$id,xk=numeric(nrow(ds)),yk=numeric(nrow(ds)),x=numeric(nrow(ds)),y=numeric(nrow(ds)),dist=numeric(nrow(ds)),man=numeric(nrow(ds)))
-	#print(ds)
-	xtt <- apply(ds[,2:3],1,point2poly,a,b,c) # like a loop for each row
-	#print(xtt)
+	xtt <- apply(ds[,2:3],1,point2poly,a,b,c)
 	xtm <- matrix(xtt,ncol=2,byrow=T)
-	#print(xtm)
-	mapped$xk <- ds[,2]  # GC value
-	mapped$yk <- ds[,3]	# OFDEG value
-	mapped$x <- xtm[,1]	# GC values transformed to new PC 
-	mapped$y <- xtm[,2] # OFDEG values transformed to new PC 
+	mapped$xk <- ds[,2]
+	mapped$yk <- ds[,3]
+	mapped$x <- xtm[,1]
+	mapped$y <- xtm[,2]
 	
 	signs <- rep(1,nrow(mapped))
 	cond <- (mapped[,2] < tp & mapped[,2] < mapped[,4]) | (mapped[,2] > tp & mapped[,2] > mapped[,4]) | (mapped[,3] < mapped[,5])
 	signs[cond] <- -1
-	xts <- signs * sqrt( (mapped[,2]-mapped[,4])^2 + (mapped[,3]-mapped[,5])^2 ) # calculate the distance eucledian
+	xts <- signs * sqrt( (mapped[,2]-mapped[,4])^2 + (mapped[,3]-mapped[,5])^2 )
 	mapped$dist <- xts
-	s <- sort(mapped$x,index.return=T) # sort by x
-	mapped.s <- mapped[s$ix,]  # save the acending order 2d array in to mapped.s
-	print(mapped)
+	
+	s <- sort(mapped$x,index.return=T)
+	mapped.s <- mapped[s$ix,]
 	sxx <- diff(mapped.s$x)^2
 	sxy <- diff(mapped.s$y)^2
-	dist <- sqrt(sxx + sxy) # this distance is mahalanobis dist i think
+	dist <- sqrt(sxx + sxy)
 	ddx <- cumsum(c(0,dist))
-	print(ddx)
 	mapped.s$man <- ddx
 	
 	mapped.s$xk <- as.numeric(mapped.s$xk)
@@ -54,29 +50,28 @@ remap <- function(ds,k) {
 	
 point2poly <- function(xkyk,a,b,c) {
 	library(polynom)
-	xk <- xkyk[1]   #contain the gc content values
-	yk <- xkyk[2]	#contain the ODFEG values
+	xk <- xkyk[1]
+	yk <- xkyk[2]
 	u <- 2*a^2
 	v <- 3*a*b
 	w <- b^2 + 2*a*c + 1 - 2*a*yk
 	z <- b*c - xk - yk*b
 	p <- polynomial(c(z,w,v,u))
-	sp <- solve(p) #solve the equation
+	sp <- solve(p)
 	sp.im <- unlist(lapply(sp,Im))
 	sp.r <- as.double(sp[sp.im==0])
-	
 	d <- numeric(length(sp.r))
 	xt <- numeric(length(sp.r))
 	yt <- numeric(length(sp.r))
 	for (i in 1:length(d)) {
 		xt[i] <- sp.r[i]
 		yt[i] <- a*xt[i]^2 + b * xt[i] + c
-		d[i] <- sqrt( (xk - xt[i])^2 + (yk - yt[i])^2 ) # eucleadian distances
+		d[i] <- sqrt( (xk - xt[i])^2 + (yk - yt[i])^2 )
 	}
-	min.dist <- which.min(d) # return the index of the first layer that has the min 
+	min.dist <- which.min(d)
 	xm <- xt[min.dist]
 	ym <- yt[min.dist]
-	return(c(xm,ym)) # return the values of new cordinates
+	return(c(xm,ym))
 }
 
 
