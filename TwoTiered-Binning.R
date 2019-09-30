@@ -70,7 +70,7 @@ gcs <- data.frame(id=d$id,gc=d$gc) # create to dem array of id, gc
 plot(clustL1$mclust,clustL1$filtered.data,what="BIC")
 
 plot(toclust,xlab="U",pch=20,col="lightgray",ylab="V",cex.lab=0.9,cex.axis=0.8) # all data send to clustering
-points(clustL1.post$data,pch=20,col=heat.colors(5)) #  after post processing
+points(clustL1.post$data,pch=20,col=blues9[5]) #  after post processing
 
 # Tier 1 - SUMMARY
 (perc.noise <- (nrow(d) - nrow(clustL1$filtered.data))/nrow(d)) # calculate the percentage noise
@@ -100,7 +100,7 @@ mm <- merge(d2,vz,by.x="id",by.y="id") # results are contiges TTf's which are fi
 v2 <- data.frame(id=mm$id,v1=mm$bin,v2=numeric(nrow(mm))) #is the bin number
 v1.classes <- unique(mm$bin) # bin categories
 features <- 4:(ncol(d2)-1) #TNF features list
-	
+
 cln2 <- vector("list",length(v1.classes))
 uncertainty.L2 <- vector("list",length(v1.classes))
 noise.L2 <- vector("list",length(v1.classes))
@@ -135,7 +135,7 @@ for (i in 1:length(v1.classes)) { # loop through each bin
 	}
 	cln2[[ii]] <- C_C.L2.post <- clusterEM_PostProc(C_C.L2$mclust,gaussianCutoff=p_T2_epsilon_m,uncertaintyMax=p_T2_epsilon_u,C_C.L2$filtered.data,C_C.L2$filtered.ids)
 }
-print("check")
+
 clx.l2 <- cln2[[1]]$classification
 det.all <- cbind(rep(1,length(cln2[[1]]$det)),cln2[[1]]$det)
 count.all <- cbind(rep(1,length(cln2[[1]]$count)),cln2[[1]]$count)
