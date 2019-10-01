@@ -1,5 +1,4 @@
 
-
 remap <- function(ds,k) {
 
 	a <- -1
@@ -78,8 +77,6 @@ point2poly <- function(xkyk,a,b,c) {
 	ym <- yt[min.dist]
 	return(c(xm,ym)) # return the values of new cordinates
 }
-
-
 
 clusterCleanEM_L1 <- function(toclust, ids, pnoise,k,Gs=1:10) {
 	library(mclust)
