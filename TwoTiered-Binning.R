@@ -56,7 +56,7 @@ nrow(d)
 sum(d$length) # get the total length of all the sequnce
 d$ofdeg <- abs(d$ofdeg) # getting absolute value of OFDEG
 ds <- data.frame(id=d$id,gc=scale(d$gc,center=F,scale=p_scaling_GC ),ofdeg=scale(d$ofdeg,center=F,scale=p_scaling_OFDEG)) # scaled data
-mt <- remap(ds,p_OFDEG_basis) # function is defined in R_func folder
+(mt <- remap(ds,p_OFDEG_basis)) # function is defined in R_func folder
 #print (mt)
 toclust <- cbind(mt$man,mt$dist)
 ids <- mt$id
@@ -188,7 +188,7 @@ m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.names=F,col.names=F,quote=F))
 # Output - binning results (sequnece.id, bin)
 (write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F))
-(cat("yes", fill=TRUE))
+(cat("Output printed", fill=TRUE))
 
 # CHECK
 (ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F))
@@ -196,5 +196,50 @@ m.L1.post <- merge(clustL1.post$classification, lengths, by.x="id",by.y="id")
 (mx2 <- merge(clx.l2[clx.l2.cond,],ans,by.x="id",by.y="id"))
 (taxon.r <- mx2$taxon[drop=TRUE])
 (ac2 <- xtabs(~taxon.r+bin,mx2))
-(ac2)
+ac2
+(cat("Accuracy check finished", fill=TRUE))
+
+# OPTIMIZATION
+binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
+bin_ids <- unique(binned_points_with_features$bin)
+
+dataframe_bin_details <- data.frame()
+
+(for(i in 1:length(bin_ids)){
+  (bin_id <- bin_ids[i])
+  (selected_bin <- subset(binned_points_with_features, binned_points_with_features$bin == bin_ids[i]))
+  
+  (min_values <- apply(selected_bin,2, min))
+  (max_values <- apply(selected_bin,2, max))
+  
+  (ofdeg_max <- max_values["ofdeg"])
+  (ofdeg_min <- min_values["ofdeg"])
+  
+  (r_max <- max_values["r"])
+  (r_min <- min_values["r"])
+  
+  (q_max <- max_values["q"])
+  (q_min <- min_values["q"])
+  
+  (rms_max <- max_values["rms"])
+  (rms_min <- min_values["rms"])
+  
+  (gc_max <- max_values["gc"])
+  (gc_min <- min_values["gc"])
+  
+  (length_max <- max_values["length"])
+  (length_min <- min_values["length"])
+  
+  (temporary_dataframe_bin_details <- data.frame(bin_id, ofdeg_max, ofdeg_min, r_max, r_min, q_max,
+                                                q_min, rms_max, rms_min, gc_max, gc_min, length_min, length_max))
+  
+  (names(temporary_dataframe_bin_details) <- c("bin_id", "ofdeg_max", "ofdeg_min", "r_max", "r_min", "q_max",
+                                                "q_min", "rms_max", "rms_min", "gc_max", "gc_min", "length_max",
+                                                "length_max"))
+  
+  (dataframe_bin_details <- rbind(dataframe_bin_details, temporary_dataframe_bin_details))
+})
+
+
+
 
