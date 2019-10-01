@@ -39,12 +39,10 @@ remap <- function(ds,k) {
 	mapped$dist <- xts
 	s <- sort(mapped$x,index.return=T) # sort by x
 	mapped.s <- mapped[s$ix,]  # save the acending order 2d array in to mapped.s
-	print(mapped)
 	sxx <- diff(mapped.s$x)^2
 	sxy <- diff(mapped.s$y)^2
 	dist <- sqrt(sxx + sxy) # this distance is mahalanobis dist i think
 	ddx <- cumsum(c(0,dist))
-	print(ddx)
 	mapped.s$man <- ddx
 	
 	mapped.s$xk <- as.numeric(mapped.s$xk)
