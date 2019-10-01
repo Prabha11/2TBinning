@@ -201,6 +201,8 @@ unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequen
 write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
 print(unbinnedContigs)
 
+
+
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
 names(ans) <- c("id","taxon")
