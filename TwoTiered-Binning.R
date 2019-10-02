@@ -35,7 +35,6 @@ p_T2_epsilon_u 	<- 0.2
 nfile1 <- paste(path,name,'/',name,'_view1.OFDEG',sep="")
 tfile <- paste(path,name,'/',name,'_view2.n4',sep="")
 output_file <- paste(path,name,'/',name,"_output",sep="")
-output_file1 <- paste(path,name,'/',name,"_output",sep="")
 
 # Tier 1 - CLUSTERING
 d1f <- read.table(file=nfile1, sep=",", header=T)
@@ -195,10 +194,6 @@ write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.na
 # Output - binning results (sequnece.id, bin)
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
-
-# FIND UNBINNED CONTIGS
-unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
-write.table(unbinnedContigs,file=paste(output_file1,".unb",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
 
 
 # CHECK
