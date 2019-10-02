@@ -1,4 +1,6 @@
-#library(Matrix)
+rm(list=ls())
+
+library(Matrix)
 library(mclust)
 library(covRobust)
 
@@ -29,7 +31,6 @@ p_T2_noise_est 	<- 0.4
 p_T2_noise_K 	<- 20
 p_T2_epsilon_m 	<- 0.2
 p_T2_epsilon_u 	<- 0.2
-
 
 nfile1 <- paste(path,name,'/',name,'_view1.OFDEG',sep="")
 tfile <- paste(path,name,'/',name,'_view2.n4',sep="")
@@ -201,6 +202,9 @@ unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequen
 write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
 print(unbinnedContigs)
 
+# FIND UNBINNED CONTIGS
+unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
+write.table(unbinnedContigs,file=paste(output_file1,".unb",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
 
 
 # CHECK
@@ -209,3 +213,47 @@ names(ans) <- c("id","taxon")
 mx2 <- merge(clx.l2[clx.l2.cond,],ans,by.x="id",by.y="id")
 taxon.r <- mx2$taxon[drop=TRUE]
 (ac2 <- xtabs(~taxon.r+bin,mx2))
+
+(cat("Accuracy check finished", fill=TRUE))
+
+# OPTIMIZATION
+binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
+bin_ids <- unique(binned_points_with_features$bin)
+
+dataframe_bin_details <- data.frame()
+
+(for(i in 1:length(bin_ids)){
+  (bin_id <- bin_ids[i])
+  (selected_bin <- subset(binned_points_with_features, binned_points_with_features$bin == bin_ids[i]))
+  
+  (min_values <- apply(selected_bin,2, min))
+  (max_values <- apply(selected_bin,2, max))
+  
+  (ofdeg_max <- max_values["ofdeg"])
+  (ofdeg_min <- min_values["ofdeg"])
+  
+  (r_max <- max_values["r"])
+  (r_min <- min_values["r"])
+  
+  (q_max <- max_values["q"])
+  (q_min <- min_values["q"])
+  
+  (rms_max <- max_values["rms"])
+  (rms_min <- min_values["rms"])
+  
+  (gc_max <- max_values["gc"])
+  (gc_min <- min_values["gc"])
+  
+  (length_max <- max_values["length"])
+  (length_min <- min_values["length"])
+  
+  (temporary_dataframe_bin_details <- data.frame(bin_id, ofdeg_max, ofdeg_min, r_max, r_min, q_max,
+                                                q_min, rms_max, rms_min, gc_max, gc_min, length_min, length_max))
+  
+  (names(temporary_dataframe_bin_details) <- c("bin_id", "ofdeg_max", "ofdeg_min", "r_max", "r_min", "q_max",
+                                                "q_min", "rms_max", "rms_min", "gc_max", "gc_min", "length_max",
+                                                "length_max"))
+  
+  (dataframe_bin_details <- rbind(dataframe_bin_details, temporary_dataframe_bin_details))
+})
+
