@@ -194,6 +194,12 @@ write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.na
 # Output - binning results (sequnece.id, bin)
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
+print(binnedContigs)
+
+# FIND UNBINNED CONTIGS
+unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
+write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+print(unbinnedContigs)
 
 
 # CHECK
@@ -201,7 +207,8 @@ ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
 names(ans) <- c("id","taxon")
 mx2 <- merge(clx.l2[clx.l2.cond,],ans,by.x="id",by.y="id")
 taxon.r <- mx2$taxon[drop=TRUE]
-ac2 <- xtabs(~taxon.r+bin,mx2)
+(ac2 <- xtabs(~taxon.r+bin,mx2))
+
 (cat("Accuracy check finished", fill=TRUE))
 
 # OPTIMIZATION
@@ -244,7 +251,4 @@ dataframe_bin_details <- data.frame()
   
   (dataframe_bin_details <- rbind(dataframe_bin_details, temporary_dataframe_bin_details))
 })
-
-
-
 
