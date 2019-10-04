@@ -22,11 +22,9 @@ my $input = $output_path.$name.'/'.$seqfile_n;
 compute($input, $name,$length_min,$length_max);
 
 sub compute {
-	my ($dataset, $name, $length_min, $length_max) = @_;
-	
+	my ($dataset, $name, $length_min, $length_max) = @_;	
 	
 	my $output2 = $output_path.$name.'/'.$name.'_view1.OFDEG';
-	
 	
 	my $kmers;
 	
@@ -35,13 +33,13 @@ sub compute {
 	print OUTPUT 'id,ns,ofdeg,r,q,rms,gc,length',"\n";
 	close(OUTPUT);
 	
-	
-	
 	my $all_seqs = new Bio::SeqIO(-format=>'fasta',-file=>$input);
 	my $count_seqs = 0;
+
 	while (my $seqobj = $all_seqs->next_seq) {
-		$count_seqs++ if ($seqobj->length >= $length_min and $seqobj->length <= $length_max);
+	$count_seqs++ if ($seqobj->length >= $length_min and $seqobj->length <= $length_max);
 	}
+	
 	print "Total Seqs: $count_seqs\n";
 	my $p = Term::ProgressBar->new(+{name => 'Generating View 1', count=>$count_seqs,ETA=>'linear'});
 	$p->minor(0);
@@ -49,28 +47,29 @@ sub compute {
 	my $update = 0;
 	$all_seqs = new Bio::SeqIO(-format=>'fasta',-file=>$input);
 	while(my $seqobj = $all_seqs->next_seq) {
-		if ($seqobj->length >= $length_min and $seqobj->length <= $length_max) { #ignore most contigs
+		if ($seqobj->length >= $length_min and $seqobj->length <= $length_max) {
 			my $id = $seqobj->id;
-			my $num_N = ($seqobj->seq =~ tr/Nn/Nn/);
-			my $seq = \(uc $seqobj->seq);
+			my $num_N = ($seqobj->seq =~ tr/Nn/Nn/); #normalize
+			my $seq = \(uc $seqobj->seq); #make them uppercase			
+			# print "\n $id $num_N $data\n";
+
 			$add++;
 			$update++;
 			if ($update == 10) {
-				$p->update($add);
+				$p->update($add);#update the progress bar
 				$update = 0;
 			}
 			my $gc = GC_content_checked($seq); 
 			my ($ofdeg,$r,$q,$rms) = ofdeg2009($seq,4,0.1,0.8,5);
+
 			open(OUTPUT, '>>'.$output2);
 			print OUTPUT $seqobj->id,',',$num_N,',',$ofdeg,',',$r,',',$q,',',$rms,',',$gc,',',$seqobj->length,"\n";
 			close(OUTPUT);
+
 		}
 	}
 	print "done.\n";
 }
-
-
-
 
 sub ofdeg2009 {
 	my ($seq,$k,$stepsize,$alpha,$coverage) = @_;
@@ -88,6 +87,8 @@ sub ofdeg2009 {
 		my $N = $coverage*(length($$seq)/$i);
 		$Nc += $N;
 		my ($errs,$alens) = sample_seq($seq,$i,$N,$k,$kmers,$all_kmers);
+		#print join (",", @$alens);
+
 		$stat->add_data($errs);
 		push @err,$stat->mean();
 		$stat = Statistics::Descriptive::Sparse->new();
@@ -141,12 +142,13 @@ sub diff_euclidean2 {
 
 sub count_Kmers_gen {
 	my ($seq, $k) = @_;
-	my $km_a = generate_k_mer_nucleotides($k);
+	my $km_a = generate_k_mer_nucleotides($k);	
 	my $kmers;
 	map { $kmers->{$_} = 0 } @$km_a;
 	for (my $i = 0; $i <= length($$seq)-$k; $i++) {
-		$kmers->{substr($$seq, $i, $k)}++ if exists ($kmers->{substr($$seq,$i,$k)});
+		$kmers->{substr($$seq, $i, $k)}++ if exists ($kmers->{substr($$seq,$i,$k)}); #return string start index i to k
 	}
+	#print Dumper $kmers;
 	return ($kmers);
 }
 
@@ -166,6 +168,7 @@ sub generate_k_mer_nucleotides {
 		undef @words;
 		@words = @newwords;
 	}
+
 	return (\@words);
 }
 

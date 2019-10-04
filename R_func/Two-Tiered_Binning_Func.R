@@ -1,5 +1,4 @@
 
-
 remap <- function(ds,k) {
 
 	a <- -1
@@ -22,11 +21,11 @@ remap <- function(ds,k) {
 	yy <- c(c,a,b)%*% rbind(1,xx^2,xx)
 
 	mapped <- data.frame(id=ds$id,xk=numeric(nrow(ds)),yk=numeric(nrow(ds)),x=numeric(nrow(ds)),y=numeric(nrow(ds)),dist=numeric(nrow(ds)),man=numeric(nrow(ds)))
-	#print(ds)
+	# print(ds)
 	xtt <- apply(ds[,2:3],1,point2poly,a,b,c) # like a loop for each row
-	#print(xtt)
+	# print(xtt)
 	xtm <- matrix(xtt,ncol=2,byrow=T)
-	#print(xtm)
+	# print(xtm)
 	mapped$xk <- ds[,2]  # GC value
 	mapped$yk <- ds[,3]	# OFDEG value
 	mapped$x <- xtm[,1]	# GC values transformed to new PC 
@@ -39,10 +38,14 @@ remap <- function(ds,k) {
 	mapped$dist <- xts
 	s <- sort(mapped$x,index.return=T) # sort by x
 	mapped.s <- mapped[s$ix,]  # save the acending order 2d array in to mapped.s
+	# print(mapped)
+
 	sxx <- diff(mapped.s$x)^2
 	sxy <- diff(mapped.s$y)^2
 	dist <- sqrt(sxx + sxy) # this distance is mahalanobis dist i think
 	ddx <- cumsum(c(0,dist))
+	# print(ddx)
+
 	mapped.s$man <- ddx
 	
 	mapped.s$xk <- as.numeric(mapped.s$xk)
@@ -77,23 +80,20 @@ point2poly <- function(xkyk,a,b,c) {
 	return(c(xm,ym)) # return the values of new cordinates
 }
 
-
-
 clusterCleanEM_L1 <- function(toclust, ids, pnoise,k,Gs=1:10) {
-
 	library(mclust)
 	library(covRobust)
 	if (pnoise > 0) {
-		xcve <- cov.nnve(toclust,pnoise=pnoise,k=k)
+		xcve <- cov.nnve(toclust,pnoise=pnoise,k=k) #noise removal using NNVE method
 		noise <- xcve$classification == 0
-		toclustN1 <- toclust[!noise,]
-		idsN1 <- ids[!noise]
+		toclustN1 <- toclust[!noise,] # remove noisy data 
+		idsN1 <- ids[!noise] 
 	} else {
 		toclustN1 <- toclust
 		idsN1 <- ids
 	}
-	m.o <- Mclust(toclustN1,modelNames="VVV",G=Gs)
-
+	m.o <- Mclust(toclustN1,modelNames="VVV",G=Gs) # g - > specify number of clusters 
+	# modelNames - > indicating the models to be fitted in the EM phase of clustering
 	ret <- vector("list",3)
 	ret[[1]] <- m.o
 	ret[[2]] <- toclustN1
@@ -103,19 +103,16 @@ clusterCleanEM_L1 <- function(toclust, ids, pnoise,k,Gs=1:10) {
 }
 
 clusterEM_PostProc <- function(m.o,gaussianCutoff,uncertaintyMax,toclust,ids) {
-	
 
-	choose.k <- length(unique(m.o$classification))
+	choose.k <- length(unique(m.o$classification)) #remove duplicates
 	if (0 %in% unique(m.o$classification)) {
 		choose.k <- choose.k - 1
 	}
-
 	m <- vector("list", choose.k)
 	s.inv <- vector("list", choose.k)
 	ps <- vector("list", choose.k)
 	p.gauss <- function(x, m, s.inv) { return(exp( -0.5*t(x - m)%*%s.inv%*%(x - m)) ) }
 	de <- c(0)
-
 	for (i in 1:choose.k) {
 		m[[i]] <- m.o$parameters$mean[,i]
 		s <- m.o$parameters$variance$sigma[,,i]

@@ -17,5 +17,6 @@ p_coverage=5
 
 # -----------------------
 
-perl generate_View1.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
-perl generate_View2.pl $name $dir_path $input_path $seqfile $length_min $length_max
+# perl generate_View1.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
+# perl generate_View2.pl $name $dir_path $input_path $seqfile $length_min $length_max
+perl reference_model_binning.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
