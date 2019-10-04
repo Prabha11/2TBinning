@@ -14,9 +14,16 @@ p_wordsize=4
 p_stepsize=0.1
 p_alpha=0.8
 p_coverage=5
+FILE='sample_data/simBG/simBG_output.L2_BINS'
 
-# -----------------------
+if [ -f "$FILE" ]; then
+    # -- Unbinned data 
+    perl reference_model_binning.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
+else 
+     # -- 2T binning method
+    perl generate_View1.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
+    perl generate_View2.pl $name $dir_path $input_path $seqfile $length_min $length_max
+fi
 
-# perl generate_View1.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
-# perl generate_View2.pl $name $dir_path $input_path $seqfile $length_min $length_max
-perl reference_model_binning.pl $name $dir_path $input_path $seqfile $length_min $length_max $p_wordsize $p_stepsize $p_alpha $p_coverage
+
+

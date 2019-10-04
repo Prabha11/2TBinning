@@ -191,6 +191,7 @@ noise.L2.summary <- data.frame(id=v1.classes,noise.perc=noise.L2.all,noise=noise
 
 # Output - summary
 write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+
 # Output - binning results (sequnece.id, bin)
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
@@ -200,7 +201,6 @@ print(binnedContigs)
 unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
 write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
 print(unbinnedContigs)
-
 
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
