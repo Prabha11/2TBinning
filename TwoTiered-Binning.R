@@ -1,4 +1,5 @@
 rm(list=ls())
+# setwd("C:\\Users\\PRABHA\\Downloads\\2TBinning_v1.2.3.tar\\2TBinning_v1.2.3\\2TBinning")
 
 library(Matrix)
 library(mclust)
