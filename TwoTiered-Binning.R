@@ -36,7 +36,6 @@ p_T2_epsilon_u 	<- 0.2
 nfile1 <- paste(path,name,'/',name,'_view1.OFDEG',sep="")
 tfile <- paste(path,name,'/',name,'_view2.n4',sep="")
 output_file <- paste(path,name,'/',name,"_output",sep="")
-output_file1 <- paste(path,name,'/',name,"_output",sep="")
 
 # Tier 1 - CLUSTERING
 d1f <- read.table(file=nfile1, sep=",", header=T)
@@ -193,25 +192,27 @@ noise.L2.summary <- data.frame(id=v1.classes,noise.perc=noise.L2.all,noise=noise
 
 # Output - summary
 write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+
 # Output - binning results (sequnece.id, bin)
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
+print(binnedContigs)
 
 # FIND UNBINNED CONTIGS
 unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
-write.table(unbinnedContigs,file=paste(output_file1,".unb",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
-
+write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+print(unbinnedContigs)
 
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
 names(ans) <- c("id","taxon")
 mx2 <- merge(clx.l2[clx.l2.cond,],ans,by.x="id",by.y="id")
 taxon.r <- mx2$taxon[drop=TRUE]
-ac2 <- xtabs(~taxon.r+bin,mx2)
+(ac2 <- xtabs(~taxon.r+bin,mx2))
+
 (cat("Accuracy check finished", fill=TRUE))
 
 # OPTIMIZATION
 binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
-
 
 
