@@ -62,7 +62,7 @@ cost_history = np.empty(shape=[1], dtype=float)
 n_dim = X.shape[1]
 print('n_dim', n_dim)
 n_class = 7
-model_path = 'Modle/ANN_modle'
+model_path = 'Model/ANN_model'
 
 # Define the hidden layers
 
@@ -77,7 +77,6 @@ y_ = tf.placeholder(tf.float32, [None, n_class])
 # Define the model
 def multilayer_perceptron(x, weights, biases):
 
-    # Hidden layer with RELU activation
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
     layer_1 = tf.nn.sigmoid(layer_1)
 
