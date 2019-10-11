@@ -115,7 +115,7 @@ for (i in 1:length(v1.classes)) { # loop through each bin
 	toclust <- toclust.subset[,features] # selects the TNF set
 	pca <- prcomp(toclust,scale=T) # return pCA with std deviations and rotaions
 	perc <- round(pca$sdev/sum(pca$sdev)*100,2)
-	
+	# print(pca)
 	# You may only need to the first two principal components, depending on your data set
 	choices <- c(1,2,3)
 	#choices <- c(1,2)
@@ -123,7 +123,7 @@ for (i in 1:length(v1.classes)) { # loop through each bin
 	toclust.pca <- pca$x[,choices] # select the first 3 priciple comp
 	toclust <- toclust.pca
 	ids <- toclust.subset[,1] # ids
-
+	
 	C_C.L2 <- clusterCleanEM_L1(toclust, ids, pnoise=p_T2_noise_est,k=p_T2_noise_K)
 	mclust.L2[[ii]] <- tapply(C_C.L2$filtered.ids,C_C.L2$mclust$classification,length) # contain bins in tier 2 with number of contigs
 	noise.L2[[ii]] <- 1-nrow(C_C.L2$filtered.data)/nrow(toclust)
@@ -197,11 +197,6 @@ write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.na
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
 print(binnedContigs)
-
-# FIND UNBINNED CONTIGS
-unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
-write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
-print(unbinnedContigs)
 
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
