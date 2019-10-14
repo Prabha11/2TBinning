@@ -49,10 +49,14 @@ d1 <- subset(d1f,d1f$ofdeg > -0.095 & d1f$ofdeg < -0.06) # filtering out some co
 plot(ofdeg~gc,d1,xlab="GC content (%)",pch=20,col=densCols(cbind(d1$gc,d1$ofdeg)),ylab="OFDEG",cex.lab=0.9,cex.axis=0.8)
 
 d <- subset(d1,length >= p_min_length & length <= p_max_length) # filtering out again
+write.table(d,file=paste(output_file,".filtered_contiges_1st_phase",sep=""),sep=",",row.names=F,col.names=F,quote=F)
 
+print("first filter result number of rows")
 nrow(d)
 d <- subset(d, d$n <= p_max_Ns)
+print("second filter result number of rows")
 nrow(d)
+print("total length of all sequences")
 sum(d$length) # get the total length of all the sequnce
 d$ofdeg <- abs(d$ofdeg) # getting absolute value of OFDEG
 ds <- data.frame(id=d$id,gc=scale(d$gc,center=F,scale=p_scaling_GC ),ofdeg=scale(d$ofdeg,center=F,scale=p_scaling_OFDEG)) # scaled data
@@ -73,7 +77,10 @@ plot(clustL1$mclust,clustL1$filtered.data,what="BIC")
 plot(toclust,xlab="U",pch=20,col="lightgray",ylab="V",cex.lab=0.9,cex.axis=0.8) # all data send to clustering
 points(clustL1.post$data,pch=20,col=blues9[5]) #  after post processing
 
+
 # Tier 1 - SUMMARY
+print("Tier 1 - SUMMARY")
+
 (perc.noise <- (nrow(d) - nrow(clustL1$filtered.data))/nrow(d)) # calculate the percentage noise
 (count.noise <- nrow(d) - nrow(clustL1$filtered.data))
 m.L1 <- merge(data.frame(id=clustL1$filtered.ids,bin=clustL1$mclust$classification), lengths, by.x="id",by.y="id")
@@ -115,7 +122,7 @@ for (i in 1:length(v1.classes)) { # loop through each bin
 	toclust <- toclust.subset[,features] # selects the TNF set
 	pca <- prcomp(toclust,scale=T) # return pCA with std deviations and rotaions
 	perc <- round(pca$sdev/sum(pca$sdev)*100,2)
-	# print(pca)
+	
 	# You may only need to the first two principal components, depending on your data set
 	choices <- c(1,2,3)
 	#choices <- c(1,2)
@@ -123,7 +130,7 @@ for (i in 1:length(v1.classes)) { # loop through each bin
 	toclust.pca <- pca$x[,choices] # select the first 3 priciple comp
 	toclust <- toclust.pca
 	ids <- toclust.subset[,1] # ids
-	
+
 	C_C.L2 <- clusterCleanEM_L1(toclust, ids, pnoise=p_T2_noise_est,k=p_T2_noise_K)
 	mclust.L2[[ii]] <- tapply(C_C.L2$filtered.ids,C_C.L2$mclust$classification,length) # contain bins in tier 2 with number of contigs
 	noise.L2[[ii]] <- 1-nrow(C_C.L2$filtered.data)/nrow(toclust)
@@ -191,12 +198,17 @@ noise.L2.summary <- data.frame(id=v1.classes,noise.perc=noise.L2.all,noise=noise
 (L2.bins <- data.frame(bin_id=L.12,bps=unlist(count.bps),count=unlist(count.each),mean_gc=round(100*unlist(mean.gc),2),filtered=filtered.L2,filtered.perc=filtered.L2.perc,uncertainty=uncertainty.L2.all))
 
 # Output - summary
-write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep=",",row.names=F,col.names=F,quote=F)
 
 # Output - binning results (sequnece.id, bin)
 write.table(clx.l2[clx.l2.cond,],file=paste(output_file,'.L2_BINS',sep=""),sep="\t", row.names=F,col.names=F,quote=F) # write only clx.l2.cond true attributes
 binnedContigs <- clx.l2[clx.l2.cond,]
-print(binnedContigs)
+#print(binnedContigs)
+
+# FIND UNBINNED CONTIGS
+unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
+write.table(unbinnedContigs,file=paste(output_file,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+#print(unbinnedContigs)
 
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
@@ -210,5 +222,4 @@ taxon.r <- mx2$taxon[drop=TRUE]
 # Creating binned points csv
 binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
 write.csv(binned_points_with_features, file = "binned_points.csv")
-
 
