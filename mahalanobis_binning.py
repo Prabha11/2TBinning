@@ -75,4 +75,20 @@ while i < len(df.index):
         
 
 newdf = newdf.merge(df_names, on="id", how = 'inner')
-print(newdf[['id', 'bin','mahala', 'Actual taxon']]) 
+# print(newdf[['id', 'bin','mahala', 'Actual taxon']]) 
+
+# check results for dataset
+summery = binnedFile.drop_duplicates(subset='bin', keep="last")
+summery_of_bins = summery[['bin','taxon']]
+summery_of_bins.reset_index(inplace = True, drop = True)
+# print(summery_of_bins)
+results = newdf.merge(summery_of_bins, on="bin", how = 'inner')
+# print(results[['id','bin','taxon','Actual taxon']])
+results = results[['id','length','bin','mahala','taxon','Actual taxon']]
+results['Is prediction correct']= (results['taxon']==results['Actual taxon'])
+print(results[['id','length','bin','mahala','Is prediction correct']])
+
+true_prediction = results['Is prediction correct'].values.sum() # true count
+false_prediction = (~results['Is prediction correct']).values.sum() # false count
+accuracy = 100 * true_prediction / (false_prediction + true_prediction)
+print("Accuracy is: ", accuracy)
