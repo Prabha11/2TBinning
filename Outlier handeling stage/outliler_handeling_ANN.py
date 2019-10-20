@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jan 05 11:44:20 2019
-@author: PRABHA
+@author: PRABHATH
 """
 
 import matplotlib.pyplot as plt
