@@ -199,9 +199,9 @@ binnedContigs <- clx.l2[clx.l2.cond,]
 print(binnedContigs)
 
 # FIND UNBINNED CONTIGS
-unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
-write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
-print(unbinnedContigs)
+#unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
+#write.table(unbinnedContigs,file=paste(output_file1,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+#print(unbinnedContigs)
 
 # CHECK
 ans <- read.table(file="sample_data/simBG/sim.contig.ans",sep="\t",header=F)
@@ -214,6 +214,6 @@ taxon.r <- mx2$taxon[drop=TRUE]
 
 # Creating binned points csv
 binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
-write.csv(binned_points_with_features, file = "binned_points.csv")
+write.csv(binned_points_with_features, file = "Outlier handeling stage/binned_data/binned_points.csv")
 
 
