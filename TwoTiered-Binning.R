@@ -191,11 +191,11 @@ for (i in 1:length(clx.l2.cond)) {
 # Tier 2 - SUMMARY
 filtered.L2 <- (unlist(mclust.L2)-unlist(count.each))
 filtered.L2.perc <- round(100*filtered.L2/unlist(mclust.L2),2) # count of each bin after processing
-uncertainty.L2.all <- round(unlist(uncertainty.L2),2)
+uncertainty.L2.all <- unlist(uncertainty.L2)
 noise.L2.all <- round(100*unlist(noise.L2),2)
 noise.L2.count.all <- unlist(noise.L2.count)
 noise.L2.summary <- data.frame(id=v1.classes,noise.perc=noise.L2.all,noise=noise.L2.count.all)
-(L2.bins <- data.frame(bin_id=L.12,bps=unlist(count.bps),count=unlist(count.each),mean_gc=round(100*unlist(mean.gc),2),filtered=filtered.L2,filtered.perc=filtered.L2.perc,uncertainty=uncertainty.L2.all))
+(L2.bins <- data.frame(bin_id=L.12,bps=unlist(count.bps),count=unlist(count.each),mean_gc=unlist(mean.gc),filtered=filtered.L2,filtered.perc=filtered.L2.perc,uncertainty=uncertainty.L2.all))
 
 # Output - summary
 write.table(L2.bins,file=paste(output_file,".L2_summary",sep=""),sep=",",row.names=F,col.names=F,quote=F)
@@ -207,7 +207,7 @@ binnedContigs <- clx.l2[clx.l2.cond,]
 
 # FIND UNBINNED CONTIGS
 unbinnedContigs <- subset(d1f, binnedContigs$id != d1f$id) # got unbinned sequences in 2T binning method
-write.table(unbinnedContigs,file=paste(output_file,".unbinned_contiges",sep=""),sep="\t",row.names=F,col.names=F,quote=F)
+write.table(unbinnedContigs,file=paste(output_file,".unbinned_contiges",sep=""),sep=",",row.names=F,col.names=F,quote=F)
 #print(unbinnedContigs)
 
 # CHECK
