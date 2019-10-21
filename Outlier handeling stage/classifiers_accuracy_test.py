@@ -5,8 +5,12 @@
 
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
@@ -59,12 +63,29 @@ classifier = DecisionTreeClassifier(criterion='entropy', random_state=0)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
+classifier = LogisticRegression(random_state = 0)
+classifier.fit(X_train, y_train)
+classifiers.append(classifier)
+
+classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+classifier.fit(X_train, y_train)
+classifiers.append(classifier)
+
+classifier = SVC(kernel = 'linear', random_state = 0)
+classifier.fit(X_train, y_train)
+classifiers.append(classifier)
+
+classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+classifier.fit(X_train, y_train)
+classifiers.append(classifier)
+
+
 for classifier in classifiers:
     # Predicting the Test set results
     y_pred = classifier.predict(X_test)
 
     # Making the Confusion Matrix
     confusion_matrix_ = confusion_matrix(y_test, y_pred)
-    confusion_matrices.append(confusion_matrix)
+    confusion_matrices.append(confusion_matrix_)
     accuracy = accuracy_score(y_test, y_pred)
     print(accuracy)
