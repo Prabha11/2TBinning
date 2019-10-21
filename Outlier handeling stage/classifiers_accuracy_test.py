@@ -36,7 +36,7 @@ def one_hot_encode(labels):
 
 # Importing the dataset
 dataset = pd.read_csv(get_dataset_name())
-df = dataset[['bin', 'ofdeg', 'gc']]
+df = dataset[['bin', 'ofdeg', 'gc', 'r', 'q']]
 
 X = df[df.columns[1:number_of_features + 1]].values
 y = df[df.columns[0]]
@@ -63,19 +63,19 @@ classifier = DecisionTreeClassifier(criterion='entropy', random_state=0)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
-classifier = LogisticRegression(random_state = 0)
+classifier = LogisticRegression(random_state=0)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
-classifier = KNeighborsClassifier(n_neighbors = 5, metric = 'minkowski', p = 2)
+classifier = KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
-classifier = SVC(kernel = 'linear', random_state = 0)
+classifier = SVC(kernel='linear', random_state=0)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
-classifier = RandomForestClassifier(n_estimators = 10, criterion = 'entropy', random_state = 0)
+classifier = RandomForestClassifier(n_estimators=10, criterion='entropy', random_state=0)
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
