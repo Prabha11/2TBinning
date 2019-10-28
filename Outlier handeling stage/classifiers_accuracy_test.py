@@ -79,6 +79,8 @@ classifier = RandomForestClassifier(n_estimators=10, criterion='entropy', random
 classifier.fit(X_train, y_train)
 classifiers.append(classifier)
 
+accuracies = []
+
 
 for classifier in classifiers:
     # Predicting the Test set results
@@ -89,3 +91,4 @@ for classifier in classifiers:
     confusion_matrices.append(confusion_matrix_)
     accuracy = accuracy_score(y_test, y_pred)
     print(accuracy)
+    accuracies.append([classifier, accuracy])
