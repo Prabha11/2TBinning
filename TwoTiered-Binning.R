@@ -223,4 +223,3 @@ taxon.r <- mx2$taxon[drop=TRUE]
 binned_points_with_features <- merge(mx2, d1f, by.x="id",by.y="id")
 write.csv(binned_points_with_features, file = "Outlier handeling stage/binned_data/binned_points.csv")
 
-
