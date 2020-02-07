@@ -90,5 +90,19 @@ for classifier in classifiers:
     confusion_matrix_ = confusion_matrix(y_test, y_pred)
     confusion_matrices.append(confusion_matrix_)
     accuracy = accuracy_score(y_test, y_pred)
-    print(accuracy)
+    print("Test Accuracy", accuracy)
     accuracies.append([classifier, accuracy])
+
+    y_pred = classifier.predict(X_train)
+
+    accuracy = accuracy_score(y_train, y_pred)
+    print("Train Accuracy", accuracy)
+
+for n in range(1, 11):
+    classifier = KNeighborsClassifier(n_neighbors=n, metric='minkowski', p=2)
+    classifier.fit(X_train, y_train)
+    classifiers.append(classifier)
+
+    y_pred = classifier.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(n, accuracy)
