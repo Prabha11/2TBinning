@@ -68,7 +68,7 @@ df_2Tunbinned = df_2Tunbinned.merge(principalDf, on="id", how = 'inner') # add p
 
 # BINNED DATA FEATURE EXTRACTION
 
-binnedFile = pd.read_csv("binned_points.csv") # binned file
+binnedFile = pd.read_csv("sample_data/simBG/binned_points.csv") # binned file
 df_2Tbinned = binnedFile[['id', 'ofdeg', 'gc', 'length','bin']]
 file4 = pd.read_csv('sample_data/simBG/simBG_view2.n4', delimiter = ',') # file contain details about all the contigs
 df_tnf_binned = file4.drop(['length', 'ns'], axis=1)
